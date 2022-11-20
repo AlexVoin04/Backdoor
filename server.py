@@ -4,6 +4,7 @@ import socket
 import base64
 from typing import List
 from array import *
+import time
 
 listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listener.bind(("0.0.0.0", 9990))
@@ -28,6 +29,7 @@ try:
             command_on_client :str = command_name +' '+ path_in_client
             print(command_on_client)
             cl_socket.send(command_on_client.encode())
+            time.sleep(1)
             cl_socket.send(b64)
             print("The file has been sent")
 
