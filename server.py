@@ -41,14 +41,14 @@ def main():
                 print("The file has been sent")
 
             elif "download" in command:
-                command_name, path_in_server, path_in_client :str = command.split(' ')
-                command_out :str = command_name + ' ' + path_in_client
+                command_list :list = command.split(' ')
+                command_out :str = command_list[0] + ' ' + command_list[2]
                 cl_socket.send(command_out.encode())
 
             
                 file = cl_socket.recv(1024).decode()
             
-                cod_file.on_decode(path_in_server, file)
+                cod_file.on_decode(command_list[1], file)
 
                 """
                 with open(path_in_server, 'wb') as output_file:
