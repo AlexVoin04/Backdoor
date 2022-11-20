@@ -25,7 +25,7 @@ try:
             b64 = base64.b64decode(data)
             
 
-            command_on_client :str = command_name + path_in_server
+            command_on_client :str = command_name +' '+ path_in_client
             print(command_on_client)
             cl_socket.send(command_on_client.encode())
             cl_socket.send(b64)
