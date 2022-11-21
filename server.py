@@ -5,8 +5,12 @@ import base64
 from typing import List
 from array import *
 import time
-from filecod_class import Filecod
+from filecode_class import Filecode
+import os.path
 
+def on_split(line :str):
+    result_line :list = line.split(" ")
+    return result_line
 
 def main():
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -16,44 +20,34 @@ def main():
     cl_socket, remote_address = listener.accept()
     print(f"[+] Got a connection from {remote_address} ")
 
-    cod_file :object = Filecod()
-
     try:
 
         while True:
             command :str = input(">> ")
         
-        
             if "upload" in command:
-                command_name, path_in_server, path_in_client :str = command.split(' ')
+                command_list :list = on_split(command)
+                data = Filecode.on_code(command_list[1])
+                command_on_client :str = command_list[0] +' '+ command_list[2] +' '+ str(len(data)) + ' '
+                cl_socket.send(command_on_client.encode() + data)
 
-                """
-                with open(path_in_server, '+rb') as file:
-                    data = file.read()
-                b64 = base64.b64decode(data)
-                """
-            
-                command_on_client :str = command_name +' '+ path_in_client
-
-                cl_socket.send(command_on_client.encode())
-                time.sleep(1)
-                cl_socket.send(cod_file.on_code(path_in_server))
-                print("The file has been sent")
+                response = cl_socket.recv(1024).decode()
+                print(response)
 
             elif "download" in command:
-                command_list :list = command.split(' ')
-                command_out :str = command_list[0] + ' ' + command_list[2]
+                list_command :list = on_split(command)
+                command_out :str = list_command[0] + ' ' + list_command[1]
                 cl_socket.send(command_out.encode())
 
-            
-                file = cl_socket.recv(1024).decode()
-            
-                cod_file.on_decode(command_list[1], file)
+                response = cl_socket.recv(1024).decode()
+                lenght_list :list = on_split(response)
 
-                """
-                with open(path_in_server, 'wb') as output_file:
-                    output_file.write(base64.b64decode(file))
-                """
+                while len(lenght_list[1]) != int(lenght_list[0]):
+                    lenght_list[1] = lenght_list[1] + cl_socket.recv(1024).decode()
+                Filecode.on_decode(list_command[2], lenght_list[1])
+
+                _, file = list_command[2].split("/")
+                print(f"File {file} is downloaded")
             
             else:
                 cl_socket.send(command.encode())
